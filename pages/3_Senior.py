@@ -4,7 +4,7 @@ Senior Lawyer View — review flagged matters, see AI summary, approve or reject
 import streamlit as st
 import requests
 
-API = "http://localhost:8000"
+API = "https://hackthelawteamsauron-production.up.railway.app"
 st.set_page_config(page_title="Senior View", layout="wide", page_icon="👁️")
 
 st.markdown("""

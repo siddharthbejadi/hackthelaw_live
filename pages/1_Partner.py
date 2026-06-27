@@ -8,7 +8,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from viz import build_matter_flow_html
 
-API = "http://localhost:8000"
+API = "https://hackthelawteamsauron-production.up.railway.app"
 st.set_page_config(page_title="Partner View", layout="wide", page_icon="👔")
 
 st.markdown("""
