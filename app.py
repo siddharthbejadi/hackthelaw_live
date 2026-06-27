@@ -16,9 +16,19 @@ st.markdown("""
 <style>
 .stApp { background:#eef2f7; }
 section[data-testid="stSidebar"] { background:#e2e8f0; }
-.stApp, .stApp p, .stApp span, .stApp div, .stApp label,
-.stApp .stMarkdown, .stApp .stText { color:#111 !important; }
-.stApp h1, .stApp h2, .stApp h3 { color:#0f172a !important; }
+/* Force black text everywhere */
+* { color:#111 !important; }
+/* Sidebar nav links */
+[data-testid="stSidebarNav"] a,
+[data-testid="stSidebarNav"] a span,
+[data-testid="stSidebarNav"] li,
+[data-testid="stSidebarNav"] span { color:#0f172a !important; }
+/* Keep coloured accents */
+a { color:#2563eb !important; }
+/* Keep white text on dark buttons */
+.stButton > button[kind="primary"] { color:#fff !important; }
+/* General text */
+p, span, div, label, h1, h2, h3, h4 { color:#111 !important; }
 
 .msg-supervisor {
     background:#f5f3ff; border-left:3px solid #7c3aed;
