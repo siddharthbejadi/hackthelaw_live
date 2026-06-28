@@ -8,7 +8,7 @@ st.set_page_config(page_title="Lex AI — Legal Intelligence Platform", layout="
 st.markdown("""
 <style>
 .stApp { background:#0a0f1e; }
-section[data-testid="stSidebar"] { display:none; }
+/* Only hide sidebar on landing — shown when logged in */
 #MainMenu, footer, header { visibility:hidden; }
 
 h1, h2, h3, p, label, div { color:#f8fafc; }
@@ -61,15 +61,86 @@ div[data-testid="stRadio"] label p { color:#f1f5f9 !important; font-size:0.95rem
 </style>
 """, unsafe_allow_html=True)
 
-# ── If already logged in, route directly ─────────────────────────────────────
+# ── If already logged in, show the agent demo instead of the landing page ────
 if st.session_state.get("user_name") and st.session_state.get("user_role"):
-    role = st.session_state["user_role"]
-    if role == "Partner":
-        st.switch_page("pages/1_Partner.py")
-    elif role == "Junior Lawyer":
-        st.switch_page("pages/2_Junior.py")
-    elif role == "Senior Lawyer":
-        st.switch_page("pages/3_Senior.py")
+    import json, sys, os
+    sys.path.insert(0, os.path.dirname(__file__))
+    from agents import _get_client, MODEL, AGENT_PROMPTS, _extract_json, log_event
+
+    user_name = st.session_state["user_name"]
+    st.markdown(f"""
+    <div style="padding:16px 0 8px;">
+      <div style="font-size:1.8rem;font-weight:800;color:#f8fafc;">⚖️ Supervise AI</div>
+      <div style="color:#94a3b8;font-size:0.85rem;">Logged in as <b style="color:#60a5fa;">{user_name}</b> · Watch AI agents analyse legal matters in real time</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    demo_mode = st.radio("Pipeline mode",
+        ["⚡ Review + Risk (fast)", "🔬 Full: Research + Draft + Review + Risk"],
+        label_visibility="collapsed", horizontal=True)
+    full_pipeline = "Full" in demo_mode
+
+    task = st.chat_input("Describe a legal matter or paste a clause…")
+
+    AGENT_META = {
+        "research":     {"label": "🔍 RESEARCH",  "css": "msg-research",  "color": "#2563eb"},
+        "drafting":     {"label": "✍️ DRAFTING",  "css": "msg-drafting",  "color": "#9333ea"},
+        "review":       {"label": "🔎 REVIEW",    "css": "msg-review",    "color": "#d97706"},
+        "risk_analysis":{"label": "⚠️ RISK",      "css": "msg-risk",      "color": "#dc2626"},
+        "supervisor":   {"label": "🧠 SUPERVISOR","css": "msg-supervisor","color": "#7c3aed"},
+    }
+
+    def stream_agent(agent_name, task, context=""):
+        system_prompt = AGENT_PROMPTS[agent_name]
+        user_content  = f"TASK:\n{task}" + (f"\n\nCONTEXT:\n{context}" if context else "")
+        try:
+            stream = _get_client().chat.completions.create(
+                model=MODEL,
+                messages=[{"role":"system","content":system_prompt},{"role":"user","content":user_content}],
+                temperature=0.6, top_p=0.95, max_tokens=3000,
+                extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":2048},
+                stream=True,
+            )
+        except Exception as e:
+            yield f"[ERROR: {str(e)[:100]}]"; return
+        for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
+
+    def parse_out(raw):
+        try: return json.loads(_extract_json(raw))
+        except: return {"output":raw,"confidence":0,"risk":100,"citations":[],"flags":[]}
+
+    if task:
+        st.markdown("---")
+        agent_order = ["research","drafting","review","risk_analysis"] if full_pipeline else ["review","risk_analysis"]
+        results = {}
+        for agent_name in agent_order:
+            meta = AGENT_META[agent_name]
+            st.markdown(f'<div style="font-size:0.7rem;font-weight:700;color:{meta["color"]};letter-spacing:1px;text-transform:uppercase;margin:12px 0 4px;">{meta["label"]} · streaming…</div>', unsafe_allow_html=True)
+            box = st.empty()
+            full_text = ""
+            for token in stream_agent(agent_name, task):
+                full_text += token
+                box.markdown(f'<div style="background:#1e293b;border-left:3px solid {meta["color"]};border-radius:6px;padding:10px 14px;font-size:0.83rem;color:#e2e8f0;">{full_text[:500]}{"▌" if len(full_text)<500 else "…"}</div>', unsafe_allow_html=True)
+            parsed = parse_out(full_text)
+            results[agent_name] = parsed
+            conf = parsed.get("confidence","—"); risk = parsed.get("risk","—")
+            box.markdown(f'<div style="background:#1e293b;border-left:3px solid {meta["color"]};border-radius:6px;padding:10px 14px;font-size:0.83rem;color:#e2e8f0;">{parsed.get("output",full_text)[:300]}…<br><span style="font-size:0.7rem;color:#94a3b8;">conf {conf}% · risk {risk}%</span></div>', unsafe_allow_html=True)
+
+        # Supervisor decision
+        all_flags  = [f for r in results.values() for f in r.get("flags",[])]
+        high_flags = [f for f in all_flags if "HIGH" in str(f).upper()]
+        confs      = [r.get("confidence",0) for r in results.values() if isinstance(r.get("confidence"),int)]
+        risks      = [r.get("risk",0) for r in results.values() if isinstance(r.get("risk"),int)]
+        avg_conf   = sum(confs)//len(confs) if confs else 0
+        max_risk   = max(risks) if risks else 0
+        escalate   = bool(high_flags) or max_risk > 50
+        decision_color = "#dc2626" if escalate else "#16a34a"
+        decision_label = "ESCALATE → Senior Lawyer" if escalate else "APPROVE — no HIGH flags"
+        st.markdown(f'<div style="background:#1e2235;border:1px solid {decision_color}44;border-radius:8px;padding:14px;margin-top:12px;"><div style="color:#7c3aed;font-size:0.7rem;font-weight:700;letter-spacing:1px;">🧠 SUPERVISOR DECISION</div><div style="color:{decision_color};font-size:1rem;font-weight:700;margin-top:4px;">→ {decision_label}</div><div style="color:#94a3b8;font-size:0.75rem;margin-top:3px;">confidence {avg_conf}% · risk {max_risk}% · {len(high_flags)} HIGH flag(s)</div></div>', unsafe_allow_html=True)
+
+    st.stop()  # Don't show landing page to logged-in users
 
 # ── Hero ──────────────────────────────────────────────────────────────────────
 st.markdown("<div style='height:40px'></div>", unsafe_allow_html=True)

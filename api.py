@@ -463,6 +463,29 @@ def submit_draft(req: SubmitDraftRequest):
         return {"status": "accepted", "ai_review": ai_review, "matter_id": req.matter_id}
 
 
+class ClaimRequest(BaseModel):
+    matter_id: str
+    junior_id: str
+
+@app.post("/matters/claim")
+def claim_matter(req: ClaimRequest):
+    """Junior lawyer claims an unassigned matter."""
+    matter = store.get_matter(req.matter_id)
+    if not matter:
+        raise HTTPException(status_code=404, detail="Matter not found")
+    matter["assigned_to"] = req.junior_id
+    matter["status"] = "assigned"
+    store.add_action(
+        matter_id=req.matter_id,
+        actor_type="human",
+        role=req.junior_id,
+        action="claimed",
+        detail=f"{req.junior_id} claimed this matter and will handle the draft.",
+    )
+    store.save_matter(matter)
+    return {"status": "claimed", "matter_id": req.matter_id, "assigned_to": req.junior_id}
+
+
 @app.post("/matters/decision")
 def senior_decision(req: SeniorDecisionRequest):
     """

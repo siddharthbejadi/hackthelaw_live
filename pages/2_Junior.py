@@ -62,15 +62,42 @@ if st.sidebar.button("🔄 Refresh"):
 
 # ── Fetch matters ─────────────────────────────────────────────────────────────
 all_matters = requests.get(f"{API}/matters").json()
-# Show all open matters — junior can claim and work on any
-my_matters  = [m for m in all_matters if m["status"] not in ("completed", "accepted", "flagged")]
-active      = my_matters
-done        = [m for m in all_matters if m["status"] in ("completed", "accepted")]
+
+# Matters already claimed by this junior
+my_matters    = [m for m in all_matters if m.get("assigned_to") == junior_id and m["status"] not in ("completed","accepted","flagged")]
+# Unassigned matters any junior can claim
+open_matters  = [m for m in all_matters if not m.get("assigned_to") and m["status"] == "assigned"]
+done          = [m for m in all_matters if m.get("assigned_to") == junior_id and m["status"] in ("completed","accepted")]
+
+# ── Available matters to claim ────────────────────────────────────────────────
+if open_matters:
+    st.markdown("### 📋 Available Matters — Claim One")
+    for m in open_matters:
+        col_info, col_btn = st.columns([5, 1])
+        with col_info:
+            st.markdown(
+                f'<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;">'
+                f'<b style="color:#0f172a;">{m["id"]}</b> · {m["client"]} · '
+                f'<span style="color:#64748b;font-size:0.85rem;">{m.get("matter_type","—")}</span><br>'
+                f'<span style="color:#94a3b8;font-size:0.75rem;">{m.get("instructions","")[:100]}…</span>'
+                f'</div>', unsafe_allow_html=True
+            )
+        with col_btn:
+            if st.button("✋ Claim", key=f"claim_{m['id']}", type="primary", use_container_width=True):
+                requests.post(f"{API}/matters/claim", json={"matter_id": m["id"], "junior_id": junior_id})
+                st.success(f"You've claimed {m['id']}!")
+                st.rerun()
+    st.markdown("---")
+
+active = my_matters
 
 st.markdown(f"**{len(active)} active** &nbsp;|&nbsp; **{len(done)} completed**")
 
+if not active and not open_matters:
+    st.info("No matters available right now. Ask a Partner to submit one.")
+    st.stop()
+
 if not active:
-    st.info("No active matters assigned to you right now.")
     st.stop()
 
 # ── One tab per active matter ─────────────────────────────────────────────────
