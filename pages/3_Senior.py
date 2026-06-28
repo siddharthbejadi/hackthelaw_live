@@ -11,9 +11,16 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
-/* Hide pages not for Senior */
-a[href*="Partner"], a[href*="Firm_Dashboard"], a[href*="Junior"],
-a[href*="Supervise"] { display:none !important; }
+/* Senior sees: Senior (5th) + Personnel Dashboard (6th) */
+/* Hide: Supervise AI (1), Firm Dashboard (2), Partner (3), Junior (4) */
+section[data-testid="stSidebar"] nav ul li:nth-child(1),
+section[data-testid="stSidebar"] nav ul li:nth-child(2),
+section[data-testid="stSidebar"] nav ul li:nth-child(3),
+section[data-testid="stSidebar"] nav ul li:nth-child(4),
+[data-testid="stSidebarNavItems"] > li:nth-child(1),
+[data-testid="stSidebarNavItems"] > li:nth-child(2),
+[data-testid="stSidebarNavItems"] > li:nth-child(3),
+[data-testid="stSidebarNavItems"] > li:nth-child(4) { display:none !important; }
 .card  { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:10px; }
 .flag-high { background:#fef2f2; border:1px solid #fca5a5; border-radius:6px; padding:6px 12px; margin:4px 0; font-size:0.82rem; color:#dc2626; }
 .flag-med  { background:#fffbeb; border:1px solid #fcd34d; border-radius:6px; padding:6px 12px; margin:4px 0; font-size:0.82rem; color:#d97706; }

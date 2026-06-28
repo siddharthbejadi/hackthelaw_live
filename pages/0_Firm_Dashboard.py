@@ -16,6 +16,15 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
+/* Firm Dashboard is Partner-only — hide Junior(4), Senior(5), Personnel(6), home(1) */
+section[data-testid="stSidebar"] nav ul li:nth-child(1),
+section[data-testid="stSidebar"] nav ul li:nth-child(4),
+section[data-testid="stSidebar"] nav ul li:nth-child(5),
+section[data-testid="stSidebar"] nav ul li:nth-child(6),
+[data-testid="stSidebarNavItems"] > li:nth-child(1),
+[data-testid="stSidebarNavItems"] > li:nth-child(4),
+[data-testid="stSidebarNavItems"] > li:nth-child(5),
+[data-testid="stSidebarNavItems"] > li:nth-child(6) { display:none !important; }
 .badge-ai    { background:#eff6ff; color:#2563eb; border-radius:4px; padding:2px 8px; font-size:0.72rem; font-weight:700; }
 .badge-human { background:#f0fdf4; color:#16a34a; border-radius:4px; padding:2px 8px; font-size:0.72rem; font-weight:700; }
 .metric-box  { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; text-align:center; }

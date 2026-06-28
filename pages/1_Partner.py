@@ -15,9 +15,16 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
-/* Hide pages not for Partner */
-a[href*="Junior"], a[href*="Senior"], a[href*="Personnel_Dashboard"],
-a[href*="Supervise"] { display:none !important; }
+/* Partner sees: Firm Dashboard (2nd) + Partner (3rd) only */
+/* Hide: Supervise AI (1), Junior (4), Senior (5), Personnel Dashboard (6) */
+section[data-testid="stSidebar"] nav ul li:nth-child(1),
+section[data-testid="stSidebar"] nav ul li:nth-child(4),
+section[data-testid="stSidebar"] nav ul li:nth-child(5),
+section[data-testid="stSidebar"] nav ul li:nth-child(6),
+[data-testid="stSidebarNavItems"] > li:nth-child(1),
+[data-testid="stSidebarNavItems"] > li:nth-child(4),
+[data-testid="stSidebarNavItems"] > li:nth-child(5),
+[data-testid="stSidebarNavItems"] > li:nth-child(6) { display:none !important; }
 .card { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:10px; }
 .badge-ai    { background:#eff6ff; color:#2563eb; border-radius:4px; padding:2px 8px; font-size:0.75rem; font-weight:700; }
 .badge-human { background:#f0fdf4; color:#16a34a; border-radius:4px; padding:2px 8px; font-size:0.75rem; font-weight:700; }

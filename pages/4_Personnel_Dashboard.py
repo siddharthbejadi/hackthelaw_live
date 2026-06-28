@@ -12,6 +12,15 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
+/* Personnel Dashboard is Senior-only — hide home(1), Firm(2), Partner(3), Junior(4) */
+section[data-testid="stSidebar"] nav ul li:nth-child(1),
+section[data-testid="stSidebar"] nav ul li:nth-child(2),
+section[data-testid="stSidebar"] nav ul li:nth-child(3),
+section[data-testid="stSidebar"] nav ul li:nth-child(4),
+[data-testid="stSidebarNavItems"] > li:nth-child(1),
+[data-testid="stSidebarNavItems"] > li:nth-child(2),
+[data-testid="stSidebarNavItems"] > li:nth-child(3),
+[data-testid="stSidebarNavItems"] > li:nth-child(4) { display:none !important; }
 .metric-box  { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; text-align:center; }
 .metric-val  { font-size:2rem; font-weight:700; color:#0f172a; }
 .metric-lbl  { font-size:0.72rem; color:#94a3b8; margin-top:3px; }
