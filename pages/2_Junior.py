@@ -36,7 +36,7 @@ section[data-testid="stSidebar"] { background:#f1f5f9; }
 
 if not st.session_state.get("user_name"):
     st.switch_page("Supervise_AI.py")
-user_name = st.session_state.get("user_name", "Junior")
+user_name = st.session_state.get("user_name", "Lawyer")
 
 st.title(f"📝 Welcome, {user_name}")
 
