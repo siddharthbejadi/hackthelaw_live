@@ -63,8 +63,35 @@ div[data-testid="stRadio"] label p { color:#f1f5f9 !important; font-size:0.95rem
 
 # ── If already logged in, show the agent demo instead of the landing page ────
 if st.session_state.get("user_name") and st.session_state.get("user_role"):
-    # Re-show sidebar for logged-in users
-    st.markdown("<style>section[data-testid='stSidebar'] { display:flex !important; }</style>", unsafe_allow_html=True)
+    # Re-show sidebar + apply role-based page filtering
+    role = st.session_state.get("user_role", "")
+    if "Partner" in role:
+        hide = "li:nth-child(4),li:nth-child(5),li:nth-child(6)"
+    elif "Junior" in role:
+        hide = "li:nth-child(2),li:nth-child(3),li:nth-child(5),li:nth-child(6)"
+    elif "Senior" in role:
+        hide = "li:nth-child(2),li:nth-child(3),li:nth-child(4)"
+    else:
+        hide = ""
+
+    hide_css = ""
+    if hide:
+        selectors = ",".join([
+            f"section[data-testid='stSidebar'] nav ul {li}"
+            for li in hide.split(",")
+        ] + [
+            f"[data-testid='stSidebarNavItems'] > {li}"
+            for li in hide.split(",")
+        ])
+        hide_css = f"{selectors} {{ display:none !important; }}"
+
+    st.markdown(f"""
+    <style>
+    section[data-testid='stSidebar'] {{ display:flex !important; }}
+    .stApp {{ background:#0a0f1e; }}
+    {hide_css}
+    </style>
+    """, unsafe_allow_html=True)
     import json, sys, os
     sys.path.insert(0, os.path.dirname(__file__))
     from agents import _get_client, MODEL, AGENT_PROMPTS, _extract_json, log_event
