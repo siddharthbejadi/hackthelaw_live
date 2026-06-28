@@ -21,14 +21,12 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
-/* Junior sees: Junior (4th) only */
-/* Hide: Supervise AI (1), Firm Dashboard (2), Partner (3), Senior (5), Personnel (6) */
-section[data-testid="stSidebar"] nav ul li:nth-child(1),
+/* Junior sees: Supervise AI (1) + Junior (4) */
+/* Hide: Firm Dashboard (2), Partner (3), Senior (5), Personnel (6) */
 section[data-testid="stSidebar"] nav ul li:nth-child(2),
 section[data-testid="stSidebar"] nav ul li:nth-child(3),
 section[data-testid="stSidebar"] nav ul li:nth-child(5),
 section[data-testid="stSidebar"] nav ul li:nth-child(6),
-[data-testid="stSidebarNavItems"] > li:nth-child(1),
 [data-testid="stSidebarNavItems"] > li:nth-child(2),
 [data-testid="stSidebarNavItems"] > li:nth-child(3),
 [data-testid="stSidebarNavItems"] > li:nth-child(5),

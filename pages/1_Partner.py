@@ -15,13 +15,11 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
-/* Partner sees: Firm Dashboard (2nd) + Partner (3rd) only */
-/* Hide: Supervise AI (1), Junior (4), Senior (5), Personnel Dashboard (6) */
-section[data-testid="stSidebar"] nav ul li:nth-child(1),
+/* Partner sees: Supervise AI (1) + Firm Dashboard (2) + Partner (3) */
+/* Hide: Junior (4), Senior (5), Personnel Dashboard (6) */
 section[data-testid="stSidebar"] nav ul li:nth-child(4),
 section[data-testid="stSidebar"] nav ul li:nth-child(5),
 section[data-testid="stSidebar"] nav ul li:nth-child(6),
-[data-testid="stSidebarNavItems"] > li:nth-child(1),
 [data-testid="stSidebarNavItems"] > li:nth-child(4),
 [data-testid="stSidebarNavItems"] > li:nth-child(5),
 [data-testid="stSidebarNavItems"] > li:nth-child(6) { display:none !important; }

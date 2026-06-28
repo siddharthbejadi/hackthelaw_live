@@ -11,13 +11,11 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
-/* Senior sees: Senior (5th) + Personnel Dashboard (6th) */
-/* Hide: Supervise AI (1), Firm Dashboard (2), Partner (3), Junior (4) */
-section[data-testid="stSidebar"] nav ul li:nth-child(1),
+/* Senior sees: Supervise AI (1) + Senior (5) + Personnel Dashboard (6) */
+/* Hide: Firm Dashboard (2), Partner (3), Junior (4) */
 section[data-testid="stSidebar"] nav ul li:nth-child(2),
 section[data-testid="stSidebar"] nav ul li:nth-child(3),
 section[data-testid="stSidebar"] nav ul li:nth-child(4),
-[data-testid="stSidebarNavItems"] > li:nth-child(1),
 [data-testid="stSidebarNavItems"] > li:nth-child(2),
 [data-testid="stSidebarNavItems"] > li:nth-child(3),
 [data-testid="stSidebarNavItems"] > li:nth-child(4) { display:none !important; }

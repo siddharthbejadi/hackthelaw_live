@@ -97,8 +97,8 @@ st.markdown("<p style='color:#64748b;font-size:0.8rem;text-align:center;letter-s
 role = st.radio(
     "role",
     ["👔  Partner — Submit matters, oversee the firm",
-     "✍️  Junior Lawyer — Draft with AI assistance",
-     "👁️  Senior Lawyer — Review and approve flagged work"],
+     "👁️  Senior Lawyer — Review and approve flagged work",
+     "✍️  Junior Lawyer — Draft with AI assistance"],
     label_visibility="collapsed",
 )
 
@@ -119,10 +119,10 @@ if st.button(btn_label, type="primary", use_container_width=True, disabled=not r
     st.session_state["user_role"] = role_clean
     if "Partner" in role_clean:
         st.switch_page("pages/1_Partner.py")
-    elif "Junior" in role_clean:
-        st.switch_page("pages/2_Junior.py")
     elif "Senior" in role_clean:
         st.switch_page("pages/3_Senior.py")
+    elif "Junior" in role_clean:
+        st.switch_page("pages/2_Junior.py")
 
 # ── Footer stats ──────────────────────────────────────────────────────────────
 st.markdown("<div style='height:48px'></div>", unsafe_allow_html=True)

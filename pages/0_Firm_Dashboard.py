@@ -16,12 +16,10 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
-/* Firm Dashboard is Partner-only — hide Junior(4), Senior(5), Personnel(6), home(1) */
-section[data-testid="stSidebar"] nav ul li:nth-child(1),
+/* Firm Dashboard is Partner-only — keep Supervise AI(1), hide Junior(4), Senior(5), Personnel(6) */
 section[data-testid="stSidebar"] nav ul li:nth-child(4),
 section[data-testid="stSidebar"] nav ul li:nth-child(5),
 section[data-testid="stSidebar"] nav ul li:nth-child(6),
-[data-testid="stSidebarNavItems"] > li:nth-child(1),
 [data-testid="stSidebarNavItems"] > li:nth-child(4),
 [data-testid="stSidebarNavItems"] > li:nth-child(5),
 [data-testid="stSidebarNavItems"] > li:nth-child(6) { display:none !important; }
@@ -47,6 +45,34 @@ try:
 except Exception as e:
     st.error(f"Could not reach backend: {e}")
     st.stop()
+
+# ── Who has been active ───────────────────────────────────────────────────────
+all_actions_raw = [a for m in matters for a in m.get("actions", [])]
+human_actors = {}
+for a in all_actions_raw:
+    if a["actor_type"] == "human":
+        actor = a.get("role", "unknown").replace("_", " ").title()
+        ts    = a.get("timestamp", "")[:16]
+        if actor not in human_actors or ts > human_actors[actor]["last_seen"]:
+            human_actors[actor] = {"last_seen": ts, "actions": human_actors.get(actor, {}).get("actions", 0) + 1}
+        else:
+            human_actors[actor]["actions"] = human_actors[actor].get("actions", 0) + 1
+
+if human_actors:
+    st.markdown("### 👥 People Active in the Firm")
+    cols_p = st.columns(min(len(human_actors), 4))
+    for i, (name, info) in enumerate(sorted(human_actors.items(), key=lambda x: x[1]["last_seen"], reverse=True)):
+        with cols_p[i % 4]:
+            st.markdown(
+                f'<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:8px;">'
+                f'<div style="font-size:1.4rem;margin-bottom:6px;">👤</div>'
+                f'<div style="font-weight:700;color:#0f172a;font-size:0.9rem;">{name}</div>'
+                f'<div style="color:#64748b;font-size:0.72rem;margin-top:3px;">Last active: {info["last_seen"]}</div>'
+                f'<div style="color:#2563eb;font-size:0.72rem;">{info["actions"]} action(s)</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+    st.markdown("---")
 
 if not matters:
     st.info("No matters yet. Partners can submit from the Partner view.")

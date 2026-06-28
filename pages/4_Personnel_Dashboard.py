@@ -12,12 +12,10 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
-/* Personnel Dashboard is Senior-only — hide home(1), Firm(2), Partner(3), Junior(4) */
-section[data-testid="stSidebar"] nav ul li:nth-child(1),
+/* Personnel Dashboard is Senior-only — keep Supervise AI(1), hide Firm(2), Partner(3), Junior(4) */
 section[data-testid="stSidebar"] nav ul li:nth-child(2),
 section[data-testid="stSidebar"] nav ul li:nth-child(3),
 section[data-testid="stSidebar"] nav ul li:nth-child(4),
-[data-testid="stSidebarNavItems"] > li:nth-child(1),
 [data-testid="stSidebarNavItems"] > li:nth-child(2),
 [data-testid="stSidebarNavItems"] > li:nth-child(3),
 [data-testid="stSidebarNavItems"] > li:nth-child(4) { display:none !important; }
