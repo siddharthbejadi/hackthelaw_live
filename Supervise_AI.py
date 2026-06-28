@@ -8,7 +8,7 @@ st.set_page_config(page_title="Lex AI — Legal Intelligence Platform", layout="
 st.markdown("""
 <style>
 .stApp { background:#0a0f1e; }
-/* Only hide sidebar on landing — shown when logged in */
+section[data-testid="stSidebar"] { display:none; }
 #MainMenu, footer, header { visibility:hidden; }
 
 h1, h2, h3, p, label, div { color:#f8fafc; }
@@ -63,6 +63,8 @@ div[data-testid="stRadio"] label p { color:#f1f5f9 !important; font-size:0.95rem
 
 # ── If already logged in, show the agent demo instead of the landing page ────
 if st.session_state.get("user_name") and st.session_state.get("user_role"):
+    # Re-show sidebar for logged-in users
+    st.markdown("<style>section[data-testid='stSidebar'] { display:flex !important; }</style>", unsafe_allow_html=True)
     import json, sys, os
     sys.path.insert(0, os.path.dirname(__file__))
     from agents import _get_client, MODEL, AGENT_PROMPTS, _extract_json, log_event
