@@ -34,12 +34,19 @@ section[data-testid="stSidebar"] { background:#f1f5f9; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("📝 Junior Lawyer View")
+if not st.session_state.get("user_name"):
+    st.switch_page("Supervise_AI.py")
+user_name = st.session_state.get("user_name", "Junior")
 
-JUNIOR_NAMES = {"junior_1": "Priya Patel", "junior_2": "Tom Davies", "junior_3": "Aisha Mensah"}
-junior_id = st.sidebar.selectbox("Logged in as", list(JUNIOR_NAMES.keys()),
-    format_func=lambda x: JUNIOR_NAMES[x])
+st.title(f"📝 Welcome, {user_name}")
+
+junior_id = user_name.lower().replace(" ", "_")
+st.sidebar.markdown(f"**{user_name}** · Junior Lawyer")
 st.sidebar.caption("Showing your assigned matters.")
+if st.sidebar.button("🚪 Sign out"):
+    st.session_state.pop("user_name", None)
+    st.session_state.pop("user_role", None)
+    st.switch_page("Supervise_AI.py")
 if st.sidebar.button("🔄 Refresh"):
     st.rerun()
 

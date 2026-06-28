@@ -24,10 +24,18 @@ section[data-testid="stSidebar"] { background:#f1f5f9; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("👁️ Senior Lawyer Review")
+if not st.session_state.get("user_name"):
+    st.switch_page("Supervise_AI.py")
+user_name = st.session_state.get("user_name", "Senior")
+senior_id = user_name.lower().replace(" ", "_")
 
-senior_id = st.sidebar.selectbox("Logged in as", ["senior_1", "senior_2"],
-    format_func=lambda x: "James Wright" if x == "senior_1" else "Meera Nair")
+st.title(f"👁️ Welcome, {user_name}")
+st.sidebar.markdown(f"**{user_name}** · Senior Lawyer")
+
+if st.sidebar.button("🚪 Sign out"):
+    st.session_state.pop("user_name", None)
+    st.session_state.pop("user_role", None)
+    st.switch_page("Supervise_AI.py")
 
 if st.sidebar.button("🔄 Refresh"):
     st.rerun()

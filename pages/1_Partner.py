@@ -23,8 +23,18 @@ section[data-testid="stSidebar"] { background:#f1f5f9; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("👔 Partner View")
+if not st.session_state.get("user_name"):
+    st.switch_page("Supervise_AI.py")
+user_name = st.session_state.get("user_name", "Partner")
+
+st.title(f"👔 Welcome, {user_name}")
 st.caption("Submit client instructions and track all matters in your firm.")
+
+st.sidebar.markdown(f"**{user_name}** · Partner")
+if st.sidebar.button("🚪 Sign out"):
+    st.session_state.pop("user_name", None)
+    st.session_state.pop("user_role", None)
+    st.switch_page("Supervise_AI.py")
 
 tab_submit, tab_track = st.tabs(["📨 Submit New Matter", "📊 Track All Matters"])
 
@@ -37,8 +47,7 @@ with tab_submit:
     col1, col2 = st.columns(2)
     with col1:
         client = st.text_input("Client name", placeholder="e.g. Nexus Technologies Ltd")
-        partner_id = st.selectbox("Submitting as", ["partner_1", "partner_2"],
-                                   format_func=lambda x: "Sarah Chen" if x == "partner_1" else "David Okafor")
+        partner_id = user_name.lower().replace(" ", "_")
     with col2:
         matter_type = st.selectbox("Matter type", [
             "Commercial Contract Review",
