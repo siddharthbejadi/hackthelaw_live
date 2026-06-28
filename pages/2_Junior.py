@@ -21,6 +21,9 @@ st.markdown("""
 <style>
 .stApp { background:#f8fafc; }
 section[data-testid="stSidebar"] { background:#f1f5f9; }
+/* Hide pages not for Junior */
+a[href*="Partner"], a[href*="Firm_Dashboard"], a[href*="Senior"],
+a[href*="Personnel_Dashboard"], a[href*="Supervise"] { display:none !important; }
 .card        { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:8px; }
 .instr-card  { background:#f8fafc; border-left:3px solid #2563eb; border-radius:6px; padding:14px; color:#374151; font-size:0.88rem; line-height:1.6; }
 .flag-high   { background:#fef2f2; border:1px solid #fca5a5; border-radius:6px; padding:5px 10px; margin:3px 0; font-size:0.8rem; color:#dc2626; }
@@ -52,9 +55,10 @@ if st.sidebar.button("🔄 Refresh"):
 
 # ── Fetch matters ─────────────────────────────────────────────────────────────
 all_matters = requests.get(f"{API}/matters").json()
-my_matters  = [m for m in all_matters if m.get("assigned_to") == junior_id]
-active      = [m for m in my_matters if m["status"] not in ("completed", "accepted")]
-done        = [m for m in my_matters if m["status"] in ("completed", "accepted")]
+# Show all open matters — junior can claim and work on any
+my_matters  = [m for m in all_matters if m["status"] not in ("completed", "accepted", "flagged")]
+active      = my_matters
+done        = [m for m in all_matters if m["status"] in ("completed", "accepted")]
 
 st.markdown(f"**{len(active)} active** &nbsp;|&nbsp; **{len(done)} completed**")
 
